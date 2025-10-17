@@ -7,6 +7,8 @@ namespace RemoveFoldersRecursively
     {
         static void Main(string[] args)
         {
+            Console.Clear();
+
             const string VERSION = VersionInfo.Version;
 
             if (args.Length == 0)
@@ -32,13 +34,32 @@ namespace RemoveFoldersRecursively
             string currentPath = Directory.GetCurrentDirectory();
             var folders = new List<string>(args);
 
-            Console.WriteLine($"Starting from: {currentPath}");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($">>> [STARTING]: {currentPath}");
+            Console.ResetColor();
+
             foreach (var folder in folders)
             {
-                Console.WriteLine($"Looking for folder: {folder}");
+                bool found = Directory.GetDirectories(currentPath, folder, SearchOption.AllDirectories).Any();
+
+                if (found)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+
+                Console.WriteLine(found ? $">>> [FOUND]: {folder}" : $">>> [NOT FOUND]: {folder}");
+                Console.ResetColor();
             }
 
-            Console.Write("\nAre you sure you want to delete these folders recursively? (y/n): ");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("\nAre you sure you want to delete all FOUND folders recursively? (y/n): ");
+            Console.ResetColor();
+
             string? confirmation = Console.ReadLine()?.Trim().ToLower();
 
             if (confirmation != "y")
@@ -47,14 +68,18 @@ namespace RemoveFoldersRecursively
                 return;
             }
 
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\nProceeding with deletion...\n");
+            Console.ResetColor();
 
             foreach (var folder in folders)
             {
                 RemoveFoldersRecursively(currentPath, folder);
             }
 
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nAll matching folders have been processed.");
+            Console.ResetColor();
         }
 
         static void RemoveFoldersRecursively(string dir, string target)
@@ -67,11 +92,19 @@ namespace RemoveFoldersRecursively
                 {
                     if (IsInsideCurrentProject(subDir))
                     {
-                        Console.WriteLine($"Skipping current project folder: {subDir}");
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($">>> [SKIPPING]: {subDir}");
+                        Console.ResetColor();
+                        Console.WriteLine();
+
                         continue;
                     }
 
-                    Console.WriteLine($"Removing Folder: {subDir}");
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine($">>> [REMOVING]: {subDir}");
+                    Console.ResetColor();
+                    Console.WriteLine();
+
                     ForceDelete(subDir);
                 }
                 else
@@ -102,7 +135,10 @@ namespace RemoveFoldersRecursively
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Failed to delete file {file}: {ex.Message}");
+                            Console.ForegroundColor = ConsoleColor.DarkRed;
+                            Console.WriteLine($">>> [FAILED] {file}: {ex.Message}");
+                            Console.ResetColor();
+                            Console.WriteLine();
                         }
                     }
 
@@ -121,7 +157,10 @@ namespace RemoveFoldersRecursively
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to delete {path}: {ex.Message}");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine($">>> [FAILED] {path}: {ex.Message}");
+                Console.ResetColor();
+                Console.WriteLine();
             }
         }
     }
