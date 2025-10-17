@@ -1,4 +1,4 @@
-﻿namespace MyNamespace
+﻿namespace RemoveFoldersRecursively
 {
     class Program
     {
