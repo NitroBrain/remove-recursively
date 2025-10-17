@@ -31,27 +31,65 @@
             {
                 var folderName = Path.GetFileName(subDir);
 
-                if (folderName.Equals(target, StringComparison.Ordinal))
+                if (folderName.Equals(target, StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"Removing Folder: {subDir}");
+                    if (IsInsideCurrentProject(subDir))
+                    {
+                        Console.WriteLine($"Skipping current project folder: {subDir}");
+                        continue;
+                    }
 
-                    try
-                    {
-                        Directory.Delete(subDir, true);
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
-                        Console.WriteLine($"Skipping locked folder: {subDir}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Failed to delete {subDir}: {ex.Message}");
-                    }
+                    Console.WriteLine($"Removing Folder: {subDir}");
+                    ForceDelete(subDir);
                 }
                 else
                 {
                     RemoveFoldersRecursively(subDir, target);
                 }
+            }
+        }
+
+        static bool IsInsideCurrentProject(string path)
+        {
+            string exePath = AppDomain.CurrentDomain.BaseDirectory;
+            return Path.GetFullPath(path).StartsWith(Path.GetFullPath(exePath), StringComparison.OrdinalIgnoreCase);
+        }
+
+        static void ForceDelete(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    foreach (string file in Directory.GetFiles(path))
+                    {
+                        try
+                        {
+                            File.SetAttributes(file, FileAttributes.Normal);
+                            File.Delete(file);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Failed to delete file {file}: {ex.Message}");
+                        }
+                    }
+
+                    foreach (string dir in Directory.GetDirectories(path))
+                    {
+                        ForceDelete(dir);
+                    }
+
+                    Directory.Delete(path, true);
+                }
+                else if (File.Exists(path))
+                {
+                    File.SetAttributes(path, FileAttributes.Normal);
+                    File.Delete(path);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to delete {path}: {ex.Message}");
             }
         }
     }
