@@ -22,7 +22,7 @@
             Console.Write("\nAre you sure you want to delete these folders recursively? (y/n): ");
             string? confirmation = Console.ReadLine()?.Trim().ToLower();
 
-            if (confirmation != "y" && confirmation != "yes")
+            if (confirmation != "y")
             {
                 Console.WriteLine("Operation cancelled by user.");
                 return;
@@ -44,7 +44,7 @@
             {
                 var folderName = Path.GetFileName(subDir);
 
-                if (folderName.Equals(target, StringComparison.OrdinalIgnoreCase))
+                if (folderName.Equals(target, StringComparison.Ordinal))
                 {
                     if (IsInsideCurrentProject(subDir))
                     {
