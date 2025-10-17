@@ -1,13 +1,32 @@
-﻿namespace RemoveFoldersRecursively
+﻿using RemoveFoldersRecursively.Dashboard;
+using RemoveRecursively.Core;
+
+namespace RemoveFoldersRecursively
 {
     class Program
     {
         static void Main(string[] args)
         {
+            const string VERSION = VersionInfo.Version;
+
             if (args.Length == 0)
             {
-                Console.WriteLine("Usage: rr [folder1] [folder2] ...");
+                DashboardUI.Show(VERSION);
                 return;
+            }
+
+            string firstArg = args[0].ToLower();
+
+            switch (firstArg)
+            {
+                case "--version":
+                case "-v":
+                    Console.WriteLine(VersionInfo.Version);
+                    return;
+                case "--help":
+                case "--h":
+                    DashboardUI.Show(VERSION);
+                    return;
             }
 
             string currentPath = Directory.GetCurrentDirectory();
