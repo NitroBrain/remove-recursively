@@ -19,10 +19,23 @@
                 Console.WriteLine($"Looking for folder: {folder}");
             }
 
+            Console.Write("\nAre you sure you want to delete these folders recursively? (y/n): ");
+            string? confirmation = Console.ReadLine()?.Trim().ToLower();
+
+            if (confirmation != "y" && confirmation != "yes")
+            {
+                Console.WriteLine("Operation cancelled by user.");
+                return;
+            }
+
+            Console.WriteLine("\nProceeding with deletion...\n");
+
             foreach (var folder in folders)
             {
                 RemoveFoldersRecursively(currentPath, folder);
             }
+
+            Console.WriteLine("\nAll matching folders have been processed.");
         }
 
         static void RemoveFoldersRecursively(string dir, string target)
